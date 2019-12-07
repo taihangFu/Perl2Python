@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Assignment 2 - python2perl</title>
+<link href="../../bootstrap-combined.min.css" rel="stylesheet">
+<link href="../../2041.css" rel="stylesheet">
+<p>
+</head>
+<body>
+<div class="container">
+<div class="page-header">
+<h1>Assignment 1 - python2perl</h1>
+</div>
+<P>
+<small>
+<ul>
+<li>Tue Sep 09 18:00 Version 0.1 - beta release
+<li>Thu Sep 18 13:00 Version 0.2 - clarified subsets
+<li>Sat Sep 20 16:00 Version 0.3 - string concantenation added to subset 5  
+</ul>
+</small>
+<p>
+<h2>Aims</h2>
+
+<p>
+This assignment aims to give you 
+<ul>
+<li> practice in Perl programming generally
+<li> experience in translating between complex formats with Perl
+<li> introduce you to Python semantics & clarify your understanding of Perl semantics
+</ul>
+<p>
+<b>Note:</b> the material in the lecture notes will not be sufficient
+by itself to allow you to complete this assignment.
+You may need to search on-line documentation for Perl , Pythonetc.
+Being able to search documentation efficiently for the information you need is a
+<em>very</em> useful skill for any kind of computing work.
+
+<h2>Introduction</h2>
+
+Your task in this assignment to write a Python compiler.
+Generally compilers take a high level language as input
+and output assembler, which can then can be directly executed.
+Your compiler will take Python scripts as input and output Perl.
+Such a translation is useful because it is a common task for
+programmers to convert software between languages and if say
+90% of the translation can be automated, this can greatly speed
+the translation and reduce the risk of errors.
+
+Your task in this assignment is to automate this conversion.  You must write a Perl program which
+takes as input a Python script and outputs an equivalent Perl program.
+<p>
+The translation of some Python code to Perl is straightforward.
+The translation of other Python code is difficult or infeasible.
+So your program will not be able to translate all Python code to Perl.
+<p>
+The Perl code output by your program should be suitable to
+be subsequently read and modified by humans. 
+You have to output readable Perl code.  So you should
+as much as possible preserve variable names and comments, and output
+properly indented Perl code. 
+<p>
+You should call your Perl program <code>python2perl.pl</code>.  It should
+operate as Unix filters typically do, read files specified on the command line
+and if none are specified it should read from standard input (Perls's <> operator
+does this for you).  For example:
+<pre class="command_line">
+<kbd class="shell">cat iota.py</kbd>
+#!/usr/bin/python
+x = 1
+while x < 5:
+    print x
+    x = x + 1
+<kbd class="shell">python iota.py</kbd>
+0
+1
+2
+3
+4
+<kbd class="shell">./python2perl.pl iota.py >iota.pl</kbd>
+<kbd class="shell">cat iota.pl</kbd>
+#!/usr/bin/perl
+$x = 1;
+while ($x < 5) {
+    print "$x\n";
+    $x = $x + 1;
+}
+<kbd class="shell">perl iota.pl</kbd>
+0
+1
+2
+3
+4
+<kbd class="shell">./python2perl.pl iota.py|perl</kbd>
+0
+1
+2
+3
+4
+</pre>
+<p>
+In many cases the natural translation of Python code into Perl code will have
+slightly different semantics.  For example, Python's <code>print</code> statement will
+print an initial space if the preceding character printed was not a new line - Perl's <code>print</code>
+does not do  this.  Python's (pre-3.0) division operator (/) truncates its result to an integer if
+given two integer arguments.  Perl does not.
+<p>
+This is a general issue with translating between languages.
+It is essential that a compiler such as <code>gcc</code> produce a translation to assembler
+exactly matching the semantics of the program, but our purposes are different.
+<p>
+Our goal is to provide automated-assistance in converting a piece of software.
+The software will need to subsequently maintained and modified by humans 
+so the simpler natural translation to more human-readable code 
+is more desirable even if the semantics do not match exactly.
+Translation of large piece of software will not be completely automatic
+anyway and will require subsequent manual modification.
+<p>
+So we for example, you should translate  Python division operators (/) to
+Perl division operators -  and assume this would be subsequently manual modified
+if necessary,
+
+<h2>Requirements</h2>
+<p>
+To assist you tackling the assignments requirements have been broken into subsets in
+approximate order of difficulty.  Each subset contains the previous subsets.
+This implementation order is recommended not required.  You will receive marks
+for successfully translating features regardless of which subset they are in,
+even if previous subsets are unimplemented.
+<p>
+
+<p>
+<h4>Subset 0</h4>
+<ul>
+<li> print
+<li> strings 
+</ul>
+<p>
+<a href="examples/0">examples of subset 0</a>
+
+<h4>Subset 1</h4>
+<ul>
+<li> variables
+<li> numeric constants
+<li> arithmetic operators: <code>+, -, * / %, **</code>
+</ul>
+<p>
+<a href="examples/1">examples of subset 1</a>
+
+<h4>Subset 2</h4>
+<ul>
+<li> logical operators: <code>or, and, not</code>
+<li> comparison operators: <code><, <=, >, >=, <>, !=, ==</code> (numeric arguments only)
+<li> bitwise operators: <code>| ^ & << >> ~</code>
+<li> single-line if, while statements
+<li> break, continue
+</ul>
+<p>
+<a href="examples/2">examples of subset 2</a>
+
+
+<h4>Subset 3</h4>
+<ul>
+<li> multi-line if, while statements
+<li> range(), 1 or 2 arguments
+<li> single & multi-line for statements
+<li> sys.stdout.write()
+<li> sys.stdin.readline()
+<li> int()
+</ul>
+<p>
+<a href="examples/3">examples of subset 3</a>
+
+
+<h4>Subset 4</h4>
+<ul>
+<li> lists (Perl arrays) including indexing ([]),  append(), pop() with no argment, or with constant argument
+<li> len() applied to lists & strings
+<li> sys.stdin.readlines()
+<li> iteration over sys.stdin (e.g. <code>for line in sys.stdin</code>)
+<li> dicts including the keys method
+<li> sorted(), no optional arguments
+<li> string formatting with the % operator
+</ul>
+<p>
+<a href="examples/4">example of subset 4</a>
+
+<h4>Subset 5</h4>
+<ul>
+<li> comparison operators: <code><, <=, >, >=, <>, !=, ==</code> (string arguments)
+<li> concatenations operators: <code>+ +=</code> (string & list arguments)
+<li> sys.argv
+<li> : (arrays)
+<li> split(), join() methods for strings (including optional maxsplit parameter)
+<li> raw strings (r'')
+<li> re.match, re.search, re.sub
+<li> open() including the optional second parameter (mode). 
+<li> fileinput.input(), , sys.stdin
+<li> functions
+</ul>
+<p>
+Some features in subset 5 present great difficulties to translation, e.g. keyword arguments,
+perfect handling of these will not be required for full marks.
+<p>
+<a href="examples/5">examples of subset 5</a>
+
+<h4>Not Included</h4>
+
+The features you need implement are described in the subsets above
+so, for example, you don't have to translate these Python features:
+<p>
+<ul>
+<li> keywords: <code>as assert class del except exec  finally from global is lambda None nonlocal pass raise try with yield</code>
+<li> import except as needed for the above subsets
+<li> list comprehensions
+<li> multi-line string literals (""")
+<li> complex numbers
+<li> decorators
+<li> indexing of strings (in Python <code>"hello"[0] == "h"</code>)
+<li> iteration over strings (e.g. <code>for c in 'hello': print c</code>)
+<li> printing of bools (e.g. <code>print 1 < 2</code>)
+</ul>
+<p>
+
+If you do non-trivial implementations of  features which are not included, marks may be available.
+You will need submit a demo??.py file demonstrating this and mention it to your tutor.
+
+<h2>Assumptions/Clarifications</h2>
+Like all good programmers, you should make as few assumptions about
+your input as possible.
+<p>
+You can assume that the input to your program is a valid Python (2.4) program
+and it executes without exceptions.
+<p>
+It is possible to construct obscure and difficult to translate Python
+programs using the features list in the above subsets.
+Most of the  Python programs your program will be given will use the features
+in an obvious straight-forward  manner.
+<p>
+You may use any Perl package which is installed on CSE's system.
+<p>
+You may submit multiple  files but the primary file must be named <code>python2perl.pl</code>.
+<p>
+If there is Python that you cannot translate the preferred  behaviour is to
+include the untranslated Python construct as a comment.  Other sensible behaviour is acceptable.
+<p>
+It is possible the natural translation of some Python will produce warning with
+Perl's -w flag when run.  This is OK.  Your translator itself should be run with Perl's -w flag
+and it should not generate warnings.
+<p>
+You must implement all of your translator in Perl.  You can not implement your translator in Python or any other language except Perl. You can not run external programs, e.g. via system, from your translator
+
+<p>
+Most testing in the auto-marking will be indented just like the supplied examples,
+but your translator could be given Python with any valid indenting - you'll need to research how Python programs are indented (its interesting). 
+<p>
+You should follow  discussion about the assignment in the
+<a href="https://piazza.com/class/hyuqwpte53neu">course forum</a>.
+All questions about the assignment should be posted there unless they concern your private circumstances.
+This allows all students to see all answers to questions.
+<p>
+<h2>Demo & Test Inputs</h2>
+
+You should submit ten Python scripts named <code>demo00.py .. demo09.py</code>
+which your program translates correctly (or at least well).
+These should be realistic Python scripts containing features whose
+successful translation indicates the performance of your assignment.
+Your demo scripts don't have to be original, e.g. they might be lecture examples.
+If they are not original they should be correctly attributed.
+<p>
+You also should submit ten Python scripts named <code>test00.py .. test09.py</code>
+which test single aspects of translation.
+They should be short scripts containing python code which are likely
+to be good tests of a Python to Perl translator.
+to be mis-translated.
+The <code>test??.py</code> scripts do not have to be examples that your program translates successfully.
+<p>
+In summary the demo scripts should show off your translation - they can be long and
+test many aspects of Python to Perl translation.  The test scripts should show how you've
+thought about testing carefully - and they should be short and each test only a few
+aspects of  Python to Perl translation.
+<p>
+<h2>Getting Started</h2>
+Here is the <a href="python2perl.level0">source</a> to a Perl script which
+translates  correctly a very small amount of Python to Perl including
+<a href="examples/0/hello_world.py">examples//0/hello_world.py</a>.
+For example:
+<p>
+<pre class="command_line">
+<kbd class="shell">d=/home/cs2041/public_html/assignments/python2perl/</kbd>
+<kbd class="shell">cp $d/python2perl.level0 python2perl.pl</kbd>
+<kbd class="shell">ln -s $d/examples .</kbd>
+<kbd class="shell">python -u examples/0/hello_world.py</kbd>
+hello world
+<kbd class="shell">./python2perl.pl examples/0/hello_world.py >h.pl</kbd>
+<kbd class="shell">perl h.pl</kbd>
+hello world
+<kbd class="shell">python -u examples/0/hello_world.py >py.output </kbd>
+<kbd class="shell">perl hello_world.pl >pl.output </kbd>
+<kbd class="shell">diff py.output pl.output && echo success</kbd>
+success
+</pre>
+<p>
+<h4>Version History & Diary</h4>
+You need to maintain a version history for your assignment in a git repository.
+You should submit this in a tar file <code>git.tar</code> (tar is a Unix file bundling program roughly similar to zip).
+<p>
+Git will be covered later in lectures but here is a quick tutorial on 
+what to do:
+<p>
+<pre class="command_line">
+<kbd class="shell">mkdir -p 2041/ass1</kbd>
+<kbd class="shell">chmod 700 2041/ass1</kbd>
+<kbd class="shell">cd 2041/ass1</kbd>
+<kbd class="shell">git init</kbd>
+Initialized empty Git repository in ...
+<kbd class="shell">cp /home/cs2041/public_html/assignments/python2perl/python2perl.level0 python2perl.pl</kbd>
+<kbd class="shell">git add python2perl.pl</kbd>
+<kbd class="shell">git commit -a -m 'starting point'</kbd>
+....
+<kbd class="shell">vi python2perl.pl</kbd>
+<kbd class="shell">git commit -a -m 'added code to handle while loops'</kbd>
+....
+<kbd class="shell">vi python2perl.pl</kbd>
+<kbd class="shell">git commit -a -m 'added code to produce printfs'</kbd>
+....
+<kbd class="shell">....</kbd>
+<kbd class="shell">....</kbd>
+<kbd class="shell">....</kbd>
+<kbd class="shell">git commit -a -m 'tidied up assignment for submission'</kbd>
+<kbd class="shell">tar zcf git.tar .git</kbd>
+<kbd class="shell">give cs2041 ass1 python2perl.pl diary.txt git.tar test??.py demo??.py </kbd>
+</pre>
+<p>  
+You must keep notes of each piece of you make work on this assignment.
+The notes should include date, starting&finishing time, and a brief description of
+the work carried out.
+For example:
+<p>
+<table border=1 cellpadding=10>
+<tr><th>Date<th>Start<th>Stop<th>Activity<th>Comments
+<tr><td>29/04<td>16:00<td>17:30<td>coding<td>implemented image upload
+<tr><td>30/04<td>20:00<td>10:30<td>debugging<td>found bug in auction times
+</table>
+<p>
+Include these notes in the files you submit as diary.txt.
+<p>
+You may choose to store this information in git commit messages.
+and generate  <code>diary.txt</code> from <code>git log</code> before you submit.
+
+
+<H2>Assessment</H2>
+<p>
+Assignment 1 will contribute 15 marks to your final COMP2041/9041 mark
+<p>
+15% of the marks for assignment 1 will come from hand marking by
+your tutor.  These marks will be awarded on the basis of clarity, 
+commenting, elegance and style.  In other words, your tutor will assess how
+easy it is for a human to read and understand your program.
+<p>
+5% of the marks for stage 1 will be based on the test suite you submit.
+<P>
+80% of the marks for this assignment will be based on the performance of
+your translator.  It will be given a number of Python scripts to translate
+and will receive marks according to the correctness of the Perl it produces.
+<P>
+<table class="table table-striped table-bordered">
+<tr><td align=right>100%<td>Elegant programs which correctly implements subset 1-5 
+<tr><td align=right>90%<td>Good clear code, almost all of subset 1-4 handled correctly
+<tr><td align=right>80%<td>Readable code, almost all of subset 1,2&3 handled correctly
+<tr><td align=right>70%<td>Reasonably readable code, almost all of subset 1&2 handled correctly
+<tr><td align=right>60%<td>almost all of subset 1 handled correctly
+<tr><td align=right>50%<td>
+<tr><td align=right>-70%<td>Knowingly supplying  work to any other person which is subsequently submitted by another student.
+<tr><td>0 FL for COMP2041/9041<td>Submitting any other person's work with their consent.  This includes joint work.
+<tr><td>academic misconduct<td>Submitting another person's work without their consent.
+</table>
+<p>
+<p>
+The lecturer may vary the assessment scheme after inspecting
+the assignment submissions but its likely to be broadly similar to the above.
+
+
+<H2>Originality of Work</H2>
+<P>
+The work you submit must be your own work.  Submission of work partially or completely derived
+from any other person or jointly written with any other person is not permitted.
+The penalties for such an offence may include negative marks,
+automatic failure of the course and possibly other academic discipline.
+Assignment submissions will be examined both automatically and manually
+for such submissions.
+<p>
+Relevant scholarship authorities will be informed if students holding scholarships
+are involved in an incident of plagiarism or other misconduct.
+<p>
+Do not provide or show your assignment work to any other person - apart from the teaching staff
+of COMP2041/9041.
+If you knowingly provide or show your assignment work to another person for any
+reason, and work derived from it is submitted you may be penalized, even
+if the work was submitted without your knowledge or consent.  This may
+apply even if your work is submitted by a third party unknown to you.
+<p>
+Note, you will not be penalized if your work is
+taken without your consent or knowledge.
+<P>
+<h2>Submission</h2>
+<P>
+This assignment is  due at 23:59pm Monday October 6
+Submit the assignment using this <I>give</I> command:
+
+
+<pre class="command_line">
+<kbd class="shell">give cs2041 python2perl.pl diary.txt git.tar demo??.py test??.py</kbd>
+</pre>
+
+If your assignment is submitted after this date, each day it is late reduces
+the maximum mark it can achieve by 5% for the first day, 10% for the second day  and 20% per day
+after that.
+For example if an assignment worth 76% was submitted
+one day late, the late submission would have no effect.
+If the same assignment was submitted 3 days late it would be awarded
+65%, the maximum mark it can achieve at that date.
+</div>
+</body>
+</html>
